@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: patient-scheduling-system
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn wsgi:app
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: patient-db
+          property: connectionString
+
+databases:
+  - name: patient-db
+    databaseName: patientschedule
+    user: scheduler
+    plan: free
