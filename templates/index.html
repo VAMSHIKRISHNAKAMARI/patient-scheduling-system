@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MedQueue | Patient Appointment & Queue Scheduling System</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <div class="logo-icon">
+                    <i data-lucide="activity"></i>
+                </div>
+                <h2>MedQueue</h2>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <a href="#home" class="nav-item active" data-view="home">
+                    <i data-lucide="home"></i>
+                    <span>Home</span>
+                </a>
+                <a href="#patients" class="nav-item" data-view="patients">
+                    <i data-lucide="users"></i>
+                    <span>Patients</span>
+                </a>
+                <a href="#booking" class="nav-item" data-view="booking">
+                    <i data-lucide="calendar-plus"></i>
+                    <span>Book Appointment</span>
+                </a>
+                <a href="#queue" class="nav-item" data-view="queue">
+                    <i data-lucide="git-commit"></i>
+                    <span>Queue Status</span>
+                    <span class="badge" id="sidebar-queue-badge">0</span>
+                </a>
+                <a href="#dashboard" class="nav-item" data-view="dashboard">
+                    <i data-lucide="layout-dashboard"></i>
+                    <span>Dashboard</span>
+                </a>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <div class="user-profile">
+                    <div class="avatar">DR</div>
+                    <div class="user-info">
+                        <h4>Clinic Admin</h4>
+                        <p>Dr. Richard's Clinic</p>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="main-header">
+                <div class="header-title">
+                    <h1 id="page-title">Welcome Back</h1>
+                    <p id="page-subtitle">Here is what's happening at your clinic today.</p>
+                </div>
+                <div class="header-actions">
+                    <div class="time-display">
+                        <i data-lucide="clock"></i>
+                        <span id="live-time">00:00:00 AM</span>
+                    </div>
+                    <div class="date-display">
+                        <i data-lucide="calendar"></i>
+                        <span id="live-date">June 14, 2026</span>
+                    </div>
+                    <span class="status-indicator online">System Live</span>
+                </div>
+            </header>
+
+            <!-- Views Container -->
+            <div class="view-container">
+                
+                <!-- HOME VIEW -->
+                <section id="view-home" class="view-section active">
+                    <!-- Metric Cards Grid -->
+                    <div class="metrics-grid">
+                        <div class="metric-card cyan-gradient">
+                            <div class="metric-icon"><i data-lucide="users"></i></div>
+                            <div class="metric-info">
+                                <h3 id="metric-patients">0</h3>
+                                <p>Total Registered</p>
+                            </div>
+                        </div>
+                        <div class="metric-card blue-gradient">
+                            <div class="metric-icon"><i data-lucide="list-ordered"></i></div>
+                            <div class="metric-info">
+                                <h3 id="metric-waiting">0</h3>
+                                <p>Patients Waiting</p>
+                            </div>
+                        </div>
+                        <div class="metric-card purple-gradient">
+                            <div class="metric-icon"><i data-lucide="stethoscope"></i></div>
+                            <div class="metric-info">
+                                <h3 id="metric-consulting">0</h3>
+                                <p>In Consultation</p>
+                            </div>
+                        </div>
+                        <div class="metric-card green-gradient">
+                            <div class="metric-icon"><i data-lucide="check-circle-2"></i></div>
+                            <div class="metric-info">
+                                <h3 id="metric-completed">0</h3>
+                                <p>Completed Today</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Welcome Panel & Quick Actions -->
+                    <div class="dashboard-split">
+                        <div class="content-card welcome-card">
+                            <div class="welcome-text">
+                                <h2>Streamline Your Patient Flow</h2>
+                                <p>Efficiently manage registrations, bookings, and live queues using our high-performance FIFO Queue Data Structure system. Call, skip, or process patient tickets with a single click.</p>
+                                <button class="btn btn-primary" onclick="switchView('queue')">
+                                    <i data-lucide="git-commit"></i> Open Live Queue Board
+                                </button>
+                            </div>
+                            <div class="welcome-img">
+                                <i data-lucide="activity-square"></i>
+                            </div>
+                        </div>
+
+                        <div class="content-card">
+                            <h3>Quick Actions</h3>
+                            <div class="quick-actions-grid">
+                                <button class="quick-action-btn" onclick="switchView('patients')">
+                                    <i data-lucide="user-plus"></i>
+                                    <span>Register Patient</span>
+                                </button>
+                                <button class="quick-action-btn" onclick="switchView('booking')">
+                                    <i data-lucide="calendar"></i>
+                                    <span>Book Slot</span>
+                                </button>
+                                <button class="quick-action-btn" onclick="switchView('queue')">
+                                    <i data-lucide="play-circle"></i>
+                                    <span>Call Next Patient</span>
+                                </button>
+                                <button class="quick-action-btn" onclick="switchView('dashboard')">
+                                    <i data-lucide="trending-up"></i>
+                                    <span>Reports</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Current Queue Preview -->
+                    <div class="content-card mt-6">
+                        <div class="card-header">
+                            <h3>Live Queue Highlights</h3>
+                            <button class="btn btn-secondary btn-sm" onclick="switchView('queue')">View Full Queue</button>
+                        </div>
+                        <div class="table-container">
+                            <table class="data-table" id="table-home-queue">
+                                <thead>
+                                    <tr>
+                                        <th>Position</th>
+                                        <th>Patient ID</th>
+                                        <th>Name</th>
+                                        <th>Phone</th>
+                                        <th>Department</th>
+                                        <th>Doctor</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td colspan="7" class="empty-state">No patients currently in the queue.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- PATIENTS VIEW -->
+                <section id="view-patients" class="view-section">
+                    <div class="dashboard-split">
+                        <!-- Patient Registration Form -->
+                        <div class="content-card">
+                            <h3>Patient Registration</h3>
+                            <p class="section-desc">Create a profile for new patients before booking their queue slot.</p>
+                            <form id="form-register-patient" class="styled-form">
+                                <div class="form-group">
+                                    <label for="reg-name">Full Name *</label>
+                                    <input type="text" id="reg-name" required placeholder="John Doe">
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="reg-age">Age *</label>
+                                        <input type="number" id="reg-age" required min="0" max="150" placeholder="32">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="reg-gender">Gender *</label>
+                                        <select id="reg-gender" required>
+                                            <option value="">Select</option>
+                                            <option value="Male">Male</option>
+                                            <option value="Female">Female</option>
+                                            <option value="Other">Other</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="reg-phone">Phone Number *</label>
+                                    <input type="tel" id="reg-phone" required placeholder="10-digit number">
+                                </div>
+                                <div class="form-group">
+                                    <label for="reg-email">Email Address</label>
+                                    <input type="email" id="reg-email" placeholder="john.doe@example.com">
+                                </div>
+                                <div class="form-group">
+                                    <label for="reg-history">Basic Medical History</label>
+                                    <textarea id="reg-history" placeholder="Allergies, chronic illnesses, current medications..."></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary w-full">
+                                    <i data-lucide="user-check"></i> Register Patient
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- Patients Directory & Search -->
+                        <div class="content-card flex-2">
+                            <div class="card-header">
+                                <div>
+                                    <h3>Patients Directory</h3>
+                                    <p class="section-desc">Search profiles by name, ID, or phone number.</p>
+                                </div>
+                                <div class="search-box">
+                                    <i data-lucide="search"></i>
+                                    <input type="text" id="search-patient-input" placeholder="Search profiles...">
+                                </div>
+                            </div>
+                            <div class="table-container max-h-500">
+                                <table class="data-table" id="table-patients-list">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Name</th>
+                                            <th>Age/Gender</th>
+                                            <th>Phone</th>
+                                            <th>Registered Date</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td colspan="6" class="empty-state">Loading registered patients...</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- APPOINTMENT BOOKING VIEW -->
+                <section id="view-booking" class="view-section">
+                    <div class="dashboard-split">
+                        <!-- Booking Form -->
+                        <div class="content-card">
+                            <h3>Book Appointment & Enqueue</h3>
+                            <p class="section-desc">Create an appointment and place the patient in the active queue.</p>
+                            <form id="form-book-appointment" class="styled-form">
+                                <div class="form-group">
+                                    <label for="book-patient-search">Select Patient *</label>
+                                    <div class="search-select-wrapper">
+                                        <input type="text" id="book-patient-search" placeholder="Type name/phone to search..." autocomplete="off">
+                                        <input type="hidden" id="book-patient-id">
+                                        <div id="patient-search-results" class="search-dropdown hidden"></div>
+                                    </div>
+                                    <p class="input-helper" id="selected-patient-badge">No patient selected yet. Search and click a profile.</p>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="book-dept">Department *</label>
+                                        <select id="book-dept" required>
+                                            <option value="">Select Speciality</option>
+                                            <option value="General Medicine">General Medicine</option>
+                                            <option value="Pediatrics">Pediatrics</option>
+                                            <option value="Cardiology">Cardiology</option>
+                                            <option value="Orthopedics">Orthopedics</option>
+                                            <option value="Dermatology">Dermatology</option>
+                                            <option value="ENT">ENT</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="book-doctor">Assigned Doctor *</label>
+                                        <select id="book-doctor" required disabled>
+                                            <option value="">Select Speciality First</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="book-reason">Consultation Reason</label>
+                                    <textarea id="book-reason" placeholder="Symptoms, routine follow-up, reports review..."></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary w-full" id="btn-book-submit">
+                                    <i data-lucide="plus-circle"></i> Book & Enqueue Patient
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- Active Doctors List -->
+                        <div class="content-card">
+                            <h3>Our Active Roster</h3>
+                            <p class="section-desc">Available doctors and their departments today.</p>
+                            <div class="roster-list">
+                                <div class="roster-card">
+                                    <div class="roster-avatar"><i data-lucide="user"></i></div>
+                                    <div class="roster-info">
+                                        <h4>Dr. Richard Alpert</h4>
+                                        <p>General Medicine</p>
+                                        <span class="status-badge available">Available</span>
+                                    </div>
+                                </div>
+                                <div class="roster-card">
+                                    <div class="roster-avatar"><i data-lucide="user"></i></div>
+                                    <div class="roster-info">
+                                        <h4>Dr. Sarah Connor</h4>
+                                        <p>Pediatrics</p>
+                                        <span class="status-badge available">Available</span>
+                                    </div>
+                                </div>
+                                <div class="roster-card">
+                                    <div class="roster-avatar"><i data-lucide="user"></i></div>
+                                    <div class="roster-info">
+                                        <h4>Dr. Julius Hibbert</h4>
+                                        <p>Cardiology</p>
+                                        <span class="status-badge available">Available</span>
+                                    </div>
+                                </div>
+                                <div class="roster-card">
+                                    <div class="roster-avatar"><i data-lucide="user"></i></div>
+                                    <div class="roster-info">
+                                        <h4>Dr. Robert Chase</h4>
+                                        <p>Dermatology</p>
+                                        <span class="status-badge available">Available</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- QUEUE STATUS VIEW -->
+                <section id="view-queue" class="view-section">
+                    <div class="dashboard-split flex-column-md">
+                        <!-- Currently Serving Panel -->
+                        <div class="content-card panel-serving flex-1">
+                            <div class="serving-header">
+                                <span class="pulse-icon"><i data-lucide="stethoscope"></i></span>
+                                <span class="serving-tag">NOW CONSULTING</span>
+                            </div>
+                            
+                            <div id="serving-patient-card" class="serving-details">
+                                <div class="empty-state">No patient in consultation. Dequeue next patient.</div>
+                            </div>
+                            
+                            <div class="serving-actions-panel mt-6">
+                                <button class="btn btn-primary w-full btn-lg" onclick="dequeueNextPatient()">
+                                    <i data-lucide="arrow-right-circle"></i> Call Next Patient (Dequeue)
+                                </button>
+                                <button class="btn btn-secondary w-full mt-2" onclick="completeConsultation()">
+                                    <i data-lucide="check"></i> Complete Consultation
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Waiting Queue Sequence -->
+                        <div class="content-card flex-2">
+                            <div class="card-header">
+                                <div>
+                                    <h3>Waiting Queue Sequence</h3>
+                                    <p class="section-desc">Organized by First-In, First-Out (FIFO) scheduling.</p>
+                                </div>
+                                <div class="queue-meta">
+                                    <span class="meta-item"><i data-lucide="users"></i> <strong id="queue-size-label">0</strong> waiting</span>
+                                </div>
+                            </div>
+
+                            <div class="queue-track-container">
+                                <!-- Front of Queue Indicator -->
+                                <div class="queue-front-line">
+                                    <div class="front-line-label"><i data-lucide="shield-alert"></i> Next in Line (Queue Front)</div>
+                                    <div id="queue-front-card-container">
+                                        <div class="empty-queue-msg">Queue is currently empty.</div>
+                                    </div>
+                                </div>
+
+                                <!-- Remaining Queue -->
+                                <div class="queue-subsequent-list mt-4">
+                                    <h4 class="sub-header">Upcoming Tickets</h4>
+                                    <div id="queue-sequence-list">
+                                        <!-- Dynamic items here -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- DASHBOARD VIEW -->
+                <section id="view-dashboard" class="view-section">
+                    <!-- Analytics Grid -->
+                    <div class="dashboard-split">
+                        <!-- Chart 1: Department wise load -->
+                        <div class="content-card">
+                            <h3>Speciality Breakdown</h3>
+                            <p class="section-desc">Distribution of appointments across departments.</p>
+                            <div class="chart-wrapper">
+                                <canvas id="deptChart"></canvas>
+                            </div>
+                        </div>
+                        <!-- Chart 2: Clinic stats & numbers -->
+                        <div class="content-card">
+                            <h3>Department Stats Roster</h3>
+                            <p class="section-desc">Visual list of patient volume by category.</p>
+                            <div class="stats-table-container">
+                                <table class="data-table" id="table-dept-stats">
+                                    <thead>
+                                        <tr>
+                                            <th>Department</th>
+                                            <th>Patient Count</th>
+                                            <th>Percent Load</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td colspan="3" class="empty-state">No database records found.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Queue Audit Trail Logs -->
+                    <div class="content-card mt-6">
+                        <div class="card-header">
+                            <div>
+                                <h3>Queue Audit Trail Logs</h3>
+                                <p class="section-desc">Live tracker of Queue operations (Enqueue, Dequeue, Complete, Cancel).</p>
+                            </div>
+                            <span class="status-indicator online">Audit Online</span>
+                        </div>
+                        <div class="table-container">
+                            <table class="data-table" id="table-audit-logs">
+                                <thead>
+                                    <tr>
+                                        <th>Timestamp</th>
+                                        <th>Patient</th>
+                                        <th>Action</th>
+                                        <th>Speciality</th>
+                                        <th>Doctor</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td colspan="5" class="empty-state">No logs available.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="toast hidden">
+        <div class="toast-content">
+            <span class="toast-icon" id="toast-icon"><i data-lucide="check"></i></span>
+            <div class="toast-msg">
+                <h4 id="toast-title">Notification</h4>
+                <p id="toast-desc">Details of operation</p>
+            </div>
+        </div>
+        <button class="toast-close" onclick="closeToast()"><i data-lucide="x"></i></button>
+    </div>
+
+    <!-- Custom Script -->
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
